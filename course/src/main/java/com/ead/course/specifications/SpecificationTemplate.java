@@ -32,10 +32,18 @@ public class SpecificationTemplate {
     public static Specification<ModuleModel> moduleCourseId(final UUID courseId) {
         return (root, query, cb) -> {
             query.distinct(true);
-            Root<ModuleModel> module = root;
             Root<CourseModel> course = query.from(CourseModel.class);
-            Expression<Collection<ModuleModel>> coursesModules = course.get("modules");
-            return cb.and(cb.equal(course.get("courseId"), courseId), cb.isMember(module, coursesModules));
+            Expression<Collection<ModuleModel>> courseModules = course.get("modules");
+            return cb.and(cb.equal(course.get("courseId"), courseId), cb.isMember(root, courseModules));
+        };
+    }
+
+    public static Specification<LessonModel> lessonModuleId(final UUID moduleId) {
+        return (root, query, cb) -> {
+            query.distinct(true);
+            Root<ModuleModel> module = query.from(ModuleModel.class);
+            Expression<Collection<LessonModel>> moduleLessons = module.get("lessons");
+            return cb.and(cb.equal(module.get("moduleId"), moduleId), cb.isMember(root, moduleLessons));
         };
     }
 }
